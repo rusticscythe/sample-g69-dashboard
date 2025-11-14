@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Opportunity Dashboard - SCG Home Boonthavorn</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- React และ ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel Standalone -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Recharts -->
+    <script src="https://unpkg.com/recharts@2.5.0/dist/Recharts.js"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+                'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+                sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+        const { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } = Recharts;
+
+        // Lucide Icons Components
+        const ArrowLeft = ({ className }) => <i data-lucide="arrow-left" className={className}></i>;
+        const TrendingUp = ({ className }) => <i data-lucide="trending-up" className={className}></i>;
+        const Briefcase = ({ className }) => <i data-lucide="briefcase" className={className}></i>;
+        const User = ({ className }) => <i data-lucide="user" className={className}></i>;
+        const MapPin = ({ className }) => <i data-lucide="map-pin" className={className}></i>;
+        const Calendar = ({ className }) => <i data-lucide="calendar" className={className}></i>;
+
+        const SalesOpportunityDashboard = () => {
+            const [selectedProduct, setSelectedProduct] = useState(null);
+
+            // ข้อมูล Opportunity แยกตามประเภทสินค้า
+            const productData = [
+                { name: 'คอนกรีต', value: 45000000, projects: 28, color: '#3b82f6' },
+                { name: 'เหล็ก', value: 38000000, projects: 32, color: '#8b5cf6' },
+                { name: 'แผ่นพื้น', value: 25000000, projects: 18, color: '#ec4899' },
+                { name: 'อิฐบวลเบา', value: 22000000, projects: 24, color: '#f59e0b' },
+                { name: 'ปูน', value: 18000000, projects: 35, color: '#10b981' },
+                { name: 'มอร์ต้า', value: 15000000, projects: 22, color: '#06b6d4' },
+                { name: 'โครงหลังคา', value: 12000000, projects: 15, color: '#ef4444' },
+                { name: 'กระเบื้องหลังคา', value: 10000000, projects: 19, color: '#f97316' },
+                { name: 'ฝ้ายิปซั่ม', value: 8000000, projects: 12, color: '#84cc16' },
+                { name: 'บล๊อกปูพื้น', value: 7000000, projects: 16, color: '#14b8a6' }
+            ];
+
+            // ประเภทหน้างาน
+            const projectTypes = [
+                { type: 'งานโรงเรียน', count: 45, value: 35000000 },
+                { type: 'งานอาคารมหาวิทยาลัย', count: 28, value: 42000000 },
+                { type: 'งานโรงพยาบาล', count: 22, value: 38000000 },
+                { type: 'งานถนน', count: 35, value: 28000000 },
+                { type: 'งานเขื่อน', count: 12, value: 45000000 },
+                { type: 'งานอาคารสำนักงาน', count: 38, value: 32000000 }
+            ];
+
+            // รายละเอียดหน้างานตามประเภทสินค้า
+            const projectDetails = {
+                'คอนกรีต': [
+                    { id: 1, name: 'โรงเรียนบ้านหนองแสง', type: 'งานโรงเรียน', value: 2500000, salesRep: 'สมชาย ใจดี', location: 'อุบลราชธานี', status: 'กำลังเสนอราคา', date: '15/11/2025' },
+                    { id: 2, name: 'เขื่อนลำตะคอง ระยะที่ 3', type: 'งานเขื่อน', value: 8500000, salesRep: 'วิชัย รักษ์ดี', location: 'นครราชสีมา', status: 'รอการอนุมัติ', date: '18/11/2025' },
+                    { id: 3, name: 'โรงพยาบาลส่งเสริมสุขภาพ ต.บ้านไทร', type: 'งานโรงพยาบาล', value: 3200000, salesRep: 'ประภา สว่างใจ', location: 'ขอนแก่น', status: 'ชนะประมูล', date: '10/11/2025' },
+                    { id: 4, name: 'มหาวิทยาลัยราชภัฏ อาคาร 12', type: 'งานอาคารมหาวิทยาลัย', value: 5800000, salesRep: 'สมชาย ใจดี', location: 'อุบลราชธานี', status: 'กำลังเสนอราคา', date: '22/11/2025' }
+                ],
+                'เหล็ก': [
+                    { id: 5, name: 'โครงสร้างอาคารจอดรถ ม.เกษตรศาสตร์', type: 'งานอาคารมหาวิทยาลัย', value: 4200000, salesRep: 'วิชัย รักษ์ดี', location: 'กรุงเทพฯ', status: 'กำลังเสนอราคา', date: '12/11/2025' },
+                    { id: 6, name: 'สะพานข้ามคลองบางพลัด', type: 'งานถนน', value: 6800000, salesRep: 'นภา พรหมมา', location: 'กรุงเทพฯ', status: 'รอการอนุมัติ', date: '20/11/2025' },
+                    { id: 7, name: 'โครงหลังคาโรงเรียนวัดใหม่', type: 'งานโรงเรียน', value: 1800000, salesRep: 'ประภา สว่างใจ', location: 'สุรินทร์', status: 'ชนะประมูล', date: '08/11/2025' }
+                ],
+                'แผ่นพื้น': [
+                    { id: 8, name: 'อาคารผู้ป่วยใน รพ.ศรีนครินทร์', type: 'งานโรงพยาบาล', value: 5500000, salesRep: 'สมชาย ใจดี', location: 'ขอนแก่น', status: 'กำลังเสนอราคา', date: '25/11/2025' },
+                    { id: 9, name: 'หอพักนักศึกษา มข. อาคาร 8', type: 'งานอาคารมหาวิทยาลัย', value: 3800000, salesRep: 'วิชัย รักษ์ดี', location: 'ขอนแก่น', status: 'รอการอนุมัติ', date: '16/11/2025' }
+                ],
+                'อิฐบวลเบา': [
+                    { id: 10, name: 'โครงการบ้านจัดสรร เมืองทองธานี', type: 'งานอาคารสำนักงาน', value: 4500000, salesRep: 'นภา พรหมมา', location: 'นนทบุรี', status: 'กำลังเสนอราคา', date: '05/12/2025' },
+                    { id: 11, name: 'อาคารพาณิชย์ 3 ชั้น ถ.รัชดา', type: 'งานอาคารสำนักงาน', value: 2800000, salesRep: 'วิชัย รักษ์ดี', location: 'กรุงเทพฯ', status: 'ชนะประมูล', date: '28/11/2025' }
+                ],
+                'ปูน': [
+                    { id: 12, name: 'ปรับปรุงผิวถนน ต.หนองบัว', type: 'งานถนน', value: 3200000, salesRep: 'สมชาย ใจดี', location: 'ศรีสะเกษ', status: 'รอการอนุมัติ', date: '10/12/2025' },
+                    { id: 13, name: 'อาคารเอนกประสงค์ รร.สตรีวิทยา', type: 'งานโรงเรียน', value: 1900000, salesRep: 'ประภา สว่างใจ', location: 'ร้อยเอ็ด', status: 'กำลังเสนอราคา', date: '15/12/2025' }
+                ],
+                'มอร์ต้า': [
+                    { id: 14, name: 'ปรับปรุงกำแพงโรงเรียน', type: 'งานโรงเรียน', value: 1500000, salesRep: 'นภา พรหมมา', location: 'มหาสารคาม', status: 'กำลังเสนอราคา', date: '18/12/2025' }
+                ],
+                'โครงหลังคา': [
+                    { id: 15, name: 'หลังคาโรงจอดรถ มหาวิทยาลัย', type: 'งานอาคารมหาวิทยาลัย', value: 3500000, salesRep: 'วิชัย รักษ์ดี', location: 'ขอนแก่น', status: 'รอการอนุมัติ', date: '20/12/2025' }
+                ],
+                'กระเบื้องหลังคา': [
+                    { id: 16, name: 'ซ่อมแซมหลังคา รพ.สต.', type: 'งานโรงพยาบาล', value: 2200000, salesRep: 'สมชาย ใจดี', location: 'กาฬสินธุ์', status: 'ชนะประมูล', date: '25/12/2025' }
+                ],
+                'ฝ้ายิปซั่ม': [
+                    { id: 17, name: 'ตกแต่งภายใน อาคาร 15', type: 'งานอาคารสำนักงาน', value: 1800000, salesRep: 'ประภา สว่างใจ', location: 'กรุงเทพฯ', status: 'กำลังเสนอราคา', date: '30/12/2025' }
+                ],
+                'บล๊อกปูพื้น': [
+                    { id: 18, name: 'ลานกีฬา รร.บ้านดอนมัน', type: 'งานโรงเรียน', value: 1600000, salesRep: 'นภา พรหมมา', location: 'สุรินทร์', status: 'รอการอนุมัติ', date: '05/01/2026' }
+                ]
+            };
+
+            const totalValue = productData.reduce((sum, item) => sum + item.value, 0);
+            const totalProjects = productData.reduce((sum, item) => sum + item.projects, 0);
+
+            const formatCurrency = (value) => {
+                return new Intl.NumberFormat('th-TH', {
+                    style: 'currency',
+                    currency: 'THB',
+                    minimumFractionDigits: 0
+                }).format(value);
+            };
+
+            const getStatusColor = (status) => {
+                switch (status) {
+                    case 'ชนะประมูล': return 'bg-green-100 text-green-800';
+                    case 'กำลังเสนอราคา': return 'bg-blue-100 text-blue-800';
+                    case 'รอการอนุมัติ': return 'bg-yellow-100 text-yellow-800';
+                    default: return 'bg-gray-100 text-gray-800';
+                }
+            };
+
+            React.useEffect(() => {
+                lucide.createIcons();
+            });
+
+            // View: Project List Detail
+            if (selectedProduct && projectDetails[selectedProduct]) {
+                return (
+                    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
+                        <div className="max-w-7xl mx-auto">
+                            <div className="mb-6">
+                                <button
+                                    onClick={() => setSelectedProduct(null)}
+                                    className="flex items-center gap-2 text-blue-600 hover:text-blue-800 mb-4 transition-colors"
+                                >
+                                    <ArrowLeft className="w-5 h-5" />
+                                    <span className="font-medium">กลับสู่ Dashboard</span>
+                                </button>
+                                <h1 className="text-3xl font-bold text-gray-800">รายการหน้างาน: {selectedProduct}</h1>
+                                <p className="text-gray-600 mt-2">รายละเอียดโอกาสการขายทั้งหมด</p>
+                            </div>
+
+                            <div className="grid gap-4">
+                                {projectDetails[selectedProduct].map((project) => (
+                                    <div
+                                        key={project.id}
+                                        className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all p-6 border border-gray-200"
+                                    >
+                                        <div className="flex justify-between items-start mb-4">
+                                            <div className="flex-1">
+                                                <h3 className="text-xl font-bold text-gray-800 mb-2">{project.name}</h3>
+                                                <div className="flex flex-wrap gap-3 text-sm text-gray-600">
+                                                    <span className="flex items-center gap-1">
+                                                        <Briefcase className="w-4 h-4" />
+                                                        {project.type}
+                                                    </span>
+                                                    <span className="flex items-center gap-1">
+                                                        <MapPin className="w-4 h-4" />
+                                                        {project.location}
+                                                    </span>
+                                                    <span className="flex items-center gap-1">
+                                                        <Calendar className="w-4 h-4" />
+                                                        {project.date}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(project.status)}`}>
+                                                {project.status}
+                                            </span>
+                                        </div>
+
+                                        <div className="flex justify-between items-center pt-4 border-t border-gray-200">
+                                            <div className="flex items-center gap-2">
+                                                <User className="w-5 h-5 text-gray-400" />
+                                                <div>
+                                                    <p className="text-xs text-gray-500">Sales Representative</p>
+                                                    <p className="font-semibold text-gray-800">{project.salesRep}</p>
+                                                </div>
+                                            </div>
+                                            <div className="text-right">
+                                                <p className="text-xs text-gray-500">มูลค่าโครงการ</p>
+                                                <p className="text-2xl font-bold text-blue-600">{formatCurrency(project.value)}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            // Main Dashboard View
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
+                    <div className="max-w-7xl mx-auto">
+                        <div className="mb-8">
+                            <h1 className="text-4xl font-bold text-gray-800 mb-2">Sales Opportunity Dashboard</h1>
+                            <p className="text-gray-600">ภาพรวมโอกาสการขายวัสดุก่อสร้าง - SCG Home Boonthavorn</p>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                            <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg p-6 text-white">
+                                <div className="flex items-center justify-between mb-2">
+                                    <TrendingUp className="w-8 h-8 opacity-80" />
+                                    <span className="text-sm opacity-90">มูลค่ารวม</span>
+                                </div>
+                                <p className="text-3xl font-bold mb-1">{formatCurrency(totalValue)}</p>
+                                <p className="text-sm opacity-90">ทั้งหมด {totalProjects} โครงการ</p>
+                            </div>
+
+                            <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-lg p-6 text-white">
+                                <div className="flex items-center justify-between mb-2">
+                                    <Briefcase className="w-8 h-8 opacity-80" />
+                                    <span className="text-sm opacity-90">จำนวนหน้างาน</span>
+                                </div>
+                                <p className="text-3xl font-bold mb-1">{totalProjects}</p>
+                                <p className="text-sm opacity-90">โครงการที่กำลังติดตาม</p>
+                            </div>
+
+                            <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-lg p-6 text-white">
+                                <div className="flex items-center justify-between mb-2">
+                                    <User className="w-8 h-8 opacity-80" />
+                                    <span className="text-sm opacity-90">ประเภทสินค้า</span>
+                                </div>
+                                <p className="text-3xl font-bold mb-1">{productData.length}</p>
+                                <p className="text-sm opacity-90">หมวดหมู่วัสดุก่อสร้าง</p>
+                            </div>
+                        </div>
+
+                        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+                            <h2 className="text-2xl font-bold text-gray-800 mb-6">มูลค่า Opportunity แยกตามประเภทสินค้า</h2>
+                            <ResponsiveContainer width="100%" height={400}>
+                                <BarChart data={productData}>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                                    <XAxis 
+                                        dataKey="name" 
+                                        angle={-45} 
+                                        textAnchor="end" 
+                                        height={100}
+                                        tick={{ fill: '#4b5563', fontSize: 12 }}
+                                    />
+                                    <YAxis 
+                                        tickFormatter={(value) => `${(value / 1000000).toFixed(0)}M`}
+                                        tick={{ fill: '#4b5563', fontSize: 12 }}
+                                    />
+                                    <Tooltip 
+                                        formatter={(value) => formatCurrency(value)}
+                                        contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px' }}
+                                    />
+                                    <Bar 
+                                        dataKey="value" 
+                                        fill="#3b82f6"
+                                        radius={[8, 8, 0, 0]}
+                                        cursor="pointer"
+                                        onClick={(data) => setSelectedProduct(data.name)}
+                                    />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </div>
+
+                        <div className="mb-8">
+                            <h2 className="text-2xl font-bold text-gray-800 mb-6">คลิกเพื่อดูรายละเอียดหน้างาน</h2>
+                            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                                {productData.map((product) => (
+                                    <div
+                                        key={product.name}
+                                        onClick={() => setSelectedProduct(product.name)}
+                                        className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all cursor-pointer p-5 border-2 border-transparent hover:border-blue-500"
+                                    >
+                                        <div className="flex items-center justify-center w-12 h-12 rounded-lg mb-3 mx-auto" style={{ backgroundColor: product.color + '20' }}>
+                                            <div className="w-6 h-6 rounded" style={{ backgroundColor: product.color }}></div>
+                                        </div>
+                                        <h3 className="font-bold text-gray-800 text-center mb-2 text-sm">{product.name}</h3>
+                                        <div className="text-center">
+                                            <p className="text-lg font-bold text-blue-600">{product.projects}</p>
+                                            <p className="text-xs text-gray-500">โครงการ</p>
+                                        </div>
+                                        <div className="text-center mt-2 pt-2 border-t border-gray-200">
+                                            <p className="text-xs text-gray-600 font-semibold">{formatCurrency(product.value)}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div className="bg-white rounded-xl shadow-lg p-6">
+                                <h2 className="text-2xl font-bold text-gray-800 mb-6">กระจายตามประเภทหน้างาน</h2>
+                                <div className="space-y-4">
+                                    {projectTypes.map((type, index) => (
+                                        <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                                            <div className="flex-1">
+                                                <p className="font-semibold text-gray-800">{type.type}</p>
+                                                <p className="text-sm text-gray-500">{type.count} โครงการ</p>
+                                            </div>
+                                            <p className="text-lg font-bold text-blue-600">{formatCurrency(type.value)}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="bg-white rounded-xl shadow-lg p-6">
+                                <h2 className="text-2xl font-bold text-gray-800 mb-6">สัดส่วนมูลค่าตามประเภท</h2>
+                                <ResponsiveContainer width="100%" height={300}>
+                                    <PieChart>
+                                        <Pie
+                                            data={projectTypes}
+                                            dataKey="value"
+                                            nameKey="type"
+                                            cx="50%"
+                                            cy="50%"
+                                            outerRadius={100}
+                                            label={(entry) => `${entry.type}: ${((entry.value / projectTypes.reduce((sum, item) => sum + item.value, 0)) * 100).toFixed(1)}%`}
+                                            labelLine={false}
+                                        >
+                                            {projectTypes.map((entry, index) => (
+                                                <Cell key={`cell-${index}`} fill={productData[index % productData.length].color} />
+                                            ))}
+                                        </Pie>
+                                        <Tooltip formatter={(value) => formatCurrency(value)} />
+                                    </PieChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<SalesOpportunityDashboard />);
+    </script>
+</body>
+</html>
